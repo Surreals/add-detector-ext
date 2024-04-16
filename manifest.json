@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Ad Detector",
+  "version": "1.0",
+  "permissions": ["activeTab", "tabs", "storage", "webNavigation"],
+  "host_permissions": ["*://*.youtube.com/*", "https://www.googleapis.com/*", "https://your-api-url.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}
