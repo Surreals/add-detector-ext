@@ -18,9 +18,10 @@ chrome.runtime.sendMessage(
     videoId: extractVideoIdFromUrl(),
   },
   (response) => {
-    if (response.error) {
+    console.log('response', response);
+    if (response && response.error) {
       console.error("Failed to fetch ad times:", response.error);
-    } else {
+    } else if(response) {
       console.log("Ad times data:", response.adTimes);
       if (response.adTimes && response.adTimes.endTime) {
         skipAds(response.adTimes.endTime);
