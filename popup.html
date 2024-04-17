@@ -3,11 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YouTube Ad Detector</title>
+    <title>Ad Information</title>
+    <style>
+        body {
+            min-width: 200px;
+            font-family: Arial, sans-serif;
+            margin: 10px;
+            padding: 0;
+            background: #f4f4f4;
+            color: #333;
+        }
+        #adInfo {
+            padding: 10px;
+            background: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
-    <h1>YouTube Ad Detector</h1>
-    <div id="status">No ads detected yet.</div>
+    <div id="adInfo">
+        <h1>Ad Segments</h1>
+        <ul id="adList"></ul>
+    </div>
     <script src="popup.js"></script>
 </body>
 </html>
