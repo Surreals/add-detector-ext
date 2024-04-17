@@ -34,16 +34,16 @@ function initializeAdSkipping(ad_segments) {
     return;
   }
 
-  ad_segments.forEach((ad_segment, ind) => {
+  ad_segments.forEach((ad_segment) => {
     const startSeconds = convertToSeconds(ad_segment.start_time);
     const endSeconds = convertToSeconds(ad_segment.end_time);
 
-    player.addEventListener(`timeupdate-${ind}`, function onTimeUpdate() {
+    player.addEventListener("timeupdate", function onTimeUpdate() {
       // When current time is within the ad segment, skip to end time
       if (player.currentTime >= startSeconds && player.currentTime < endSeconds) {
         console.log("currentTime", player.currentTime, ad_segment);
         player.currentTime = endSeconds; // Move the video to the end of the ad
-        player.removeEventListener(`timeupdate-${ind}`, onTimeUpdate);
+        player.removeEventListener("timeupdate", onTimeUpdate);
       }
     });
   });
