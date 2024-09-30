@@ -1,39 +1,46 @@
-const API_KEY = "YOUR_YOUTUBE_API_KEY";
+const API_ENDPOINT = "http://localhost:3000/detect_ads"; // Заміна на ваше реальне API
 
 function storeAdSegments(ad_segments) {
   chrome.storage.local.set({ adSegments: ad_segments }, function () {
-    console.log('Ad segments are stored');
+    console.log("Ad segments are stored");
   });
 }
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (request.action === "skipAds") {
-    Promise.resolve([{ start_time: "1:21", end_time: "2:16" }])
-      .then((ad_segments) => {
-        storeAdSegments(ad_segments);
-        sendResponse(ad_segments);
-      })
-      .catch((error) => {
-        sendResponse({ error });
-      });
+// Отримання рекламних таймкодів з API
+async function fetchAdSegments(videoId) {
+  try {
+    const response = await fetch(API_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ youtube_url: `https://www.youtube.com/watch?v=${videoId}` }),
+    });
 
-    return true; // Must return true to indicate async response
-  } else if (request.action === "getAds") {
-    sendResponse(ad_segments); // Return the stored ad segments
+    if (!response.ok) {
+      throw new Error(`Error fetching ad segments: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data.ad_timings || [];
+  } catch (error) {
+    console.error(error);
+    return [];
   }
+}
+
+chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
+  if (request.action === "skipAds") {
+    const videoId = request.videoId;
+
+    // Запит рекламних сегментів через API
+    const ad_segments = await fetchAdSegments(videoId);
+    storeAdSegments(ad_segments);
+    sendResponse(ad_segments);
+  } else if (request.action === "getAds") {
+    chrome.storage.local.get("adSegments", function (result) {
+      sendResponse(result.adSegments || []);
+    });
+  }
+  return true; // Повертаємо true, щоб вказати на асинхронну відповідь
 });
-
-// const videoId = request.videoId;
-// const url = `https://www.api.com/youtube/v3/captions?part=snippet&videoId=${videoId}&key=${API_KEY}`; // make own api
-
-// fetch(url)
-//   .then((response) => response.json())
-//   .then((data) => {
-//     if (data.ad_segments && data.ad_segments.length > 0) {
-//       sendResponse({ ad_segments: data.ad_segments });
-//     } else {
-//       sendResponse({ error: "No captions available" });
-//     }
-//   })
-//   .catch((error) => sendResponse({ error: error.message }));
-// return true; // Indicates async response

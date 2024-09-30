@@ -2,8 +2,19 @@
   "manifest_version": 3,
   "name": "YouTube Ad Detector",
   "version": "1.0",
-  "permissions": ["activeTab", "tabs", "storage", "webNavigation"],
-  "host_permissions": ["*://*.youtube.com/*", "https://www.googleapis.com/*", "https://your-api-url.com/*"],
+  "description": "A Chrome extension to detect and skip ads in YouTube videos.",
+  "permissions": [
+    "storage", 
+    "tabs", 
+    "activeTab", 
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*", 
+    "https://www.googleapis.com/*", 
+    "http://localhost:3000/*", 
+    "https://your-api-url.com/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },
@@ -14,9 +25,16 @@
     }
   ],
   "action": {
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
   },
-  "browser_action": {
-    "default_popup": "popup.html"
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
   }
 }

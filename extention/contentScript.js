@@ -1,11 +1,3 @@
-// Response example
-// [
-//   {
-//     start_time: "1:21",
-//     end_time: "2:16",
-//   },
-// ]
-
 chrome.runtime.sendMessage(
   {
     action: "skipAds",
@@ -23,8 +15,18 @@ chrome.runtime.sendMessage(
 );
 
 function extractVideoIdFromUrl() {
+  // Витягання параметра "v" з URL відео
   const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get("v");
+  const videoId = urlParams.get("v");
+
+  if (!videoId) {
+    // Якщо URL не містить параметр "v", перевіряємо альтернативний формат
+    const urlPath = window.location.pathname;
+    const match = urlPath.match(/\/watch\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  }
+
+  return videoId;
 }
 
 function initializeAdSkipping(ad_segments) {
@@ -39,10 +41,10 @@ function initializeAdSkipping(ad_segments) {
     const endSeconds = convertToSeconds(ad_segment.end_time);
 
     player.addEventListener("timeupdate", function onTimeUpdate() {
-      // When current time is within the ad segment, skip to end time
+      // Пропускаємо відео, якщо поточний час знаходиться в межах рекламного сегмента
       if (player.currentTime >= startSeconds && player.currentTime < endSeconds) {
-        console.log("currentTime", player.currentTime, ad_segment);
-        player.currentTime = endSeconds; // Move the video to the end of the ad
+        console.log("Skipping ad segment:", ad_segment);
+        player.currentTime = endSeconds; // Перемотуємо до кінця реклами
         player.removeEventListener("timeupdate", onTimeUpdate);
       }
     });
