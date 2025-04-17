@@ -18,6 +18,7 @@ function extractVideoIdFromUrl() {
   // Витягання параметра "v" з URL відео
   const urlParams = new URLSearchParams(window.location.search);
   const videoId = urlParams.get("v");
+  console.log("videoId", videoId);
 
   if (!videoId) {
     // Якщо URL не містить параметр "v", перевіряємо альтернативний формат
@@ -36,17 +37,22 @@ function initializeAdSkipping(ad_segments) {
     return;
   }
 
+  console.log('initializeAdSkipping', ad_segments, player)
+
   ad_segments.forEach((ad_segment) => {
     const startSeconds = convertToSeconds(ad_segment.start_time);
     const endSeconds = convertToSeconds(ad_segment.end_time);
 
-    player.addEventListener("timeupdate", function onTimeUpdate() {
-      // Пропускаємо відео, якщо поточний час знаходиться в межах рекламного сегмента
-      if (player.currentTime >= startSeconds && player.currentTime < endSeconds) {
-        console.log("Skipping ad segment:", ad_segment);
-        player.currentTime = endSeconds; // Перемотуємо до кінця реклами
-        player.removeEventListener("timeupdate", onTimeUpdate);
-      }
+    player.addEventListener("timeupdate", () => {
+      const currentTime = player.currentTime;
+      ad_segments.forEach((ad) => {
+        const start = convertToSeconds(ad.start_time);
+        const end = convertToSeconds(ad.end_time);
+        if (currentTime >= start && currentTime < end) {
+          console.log("Skipping ad segment:", ad);
+          player.currentTime = end;
+        }
+      });
     });
   });
 }
